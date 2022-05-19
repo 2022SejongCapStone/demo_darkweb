@@ -6,11 +6,12 @@ from .forms import EditProfileForm, EditProfileAdminForm, PostForm, PostReplyFor
 from .. import db
 from ..models import Permission, User, Role, Post, Reply, Comment
 from ..decorators import admin_required, permission_required
+from werkzeug.utils import secure_filename
 
 @main.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
-    pagination = post_list.paginate(page, per_page=current_app.config['DARKWEB_POSTS_PER_PAGE'],error_out=False)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['DARKWEB_POSTS_PER_PAGE'],error_out=False)
     posts = pagination.items
     return render_template('index.html', posts=posts, pagination=pagination)
 
@@ -77,7 +78,14 @@ def edit_profile_admin(id):
 def post_write():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(subject=form.subject.data, body=form.body.data, author=current_user._get_current_object())
+        filename = form.upload.data.filename
+        post = Post(subject=form.subject.data,
+                    body=form.body.data,
+                    author=current_user._get_current_object(),
+                    filepath=secure_filename(filename))
+        if request.method == 'POST':
+            f = request.files['upload']
+            f.save('./uploads/'+ current_user._get_current_object().email + '/' + secure_filename(f.filename))
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('main.index'))
@@ -252,3 +260,26 @@ def cleaning_disable(id):
     db.session.commit()
     return redirect(url_for('.cleaning',
                             page=request.args.get('page', 1, type=int)))
+
+#다운로드 HTML 렌더링
+@main.route('/download')
+@login_required
+@permission_required(Permission.FILE)
+def down_page():
+	files = os.listdir("../../uploads")
+	return render_template('filedown.html',files=files)
+
+#파일 다운로드 처리
+@main.route('/fileDownload', methods = ['GET', 'POST'])
+@login_required
+@permission_required(Permission.FILE)
+def down_file():
+	if request.method == 'POST':
+		sw=0
+		files = os.listdir("../../uploads")
+		for x in files:
+			if(x==request.form['file']):
+				sw=1
+
+		path = "../../uploads/" 
+		return send_file(path + request.form['file'], attachment_filename = request.form['file'], as_attachment=True)

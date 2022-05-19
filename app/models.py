@@ -14,6 +14,7 @@ class Permission:
     WRITE = 2
     CLEAN = 4
     ADMIN = 8
+    FILE = 16
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -33,9 +34,9 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User': [Permission.COMMENT, Permission.WRITE],
+            'User': [Permission.COMMENT, Permission.WRITE, Permission.FILE],
             'Cleaner': [Permission.COMMENT, Permission.WRITE, Permission.CLEAN],
-            'Administrator': [Permission.COMMENT, Permission.WRITE, Permission.CLEAN, Permission.ADMIN],
+            'Administrator': [Permission.COMMENT, Permission.WRITE, Permission.CLEAN, Permission.ADMIN, Permission.FILE],
         }
 
         default_role = 'User'
@@ -171,6 +172,7 @@ class Post(db.Model):
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    filepath = db.Column(db.String(100))
     # 작성자 
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
