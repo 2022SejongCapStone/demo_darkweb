@@ -33,7 +33,7 @@ def index():
             .distinct()       
 
         pagination = post_list.paginate(
-            page, per_page=current_app.config['TESTWEB_POSTS_PER_PAGE'],error_out=False)
+            page, per_page=current_app.config['DARKWEB_POSTS_PER_PAGE'],error_out=False)
 
     else:        
 
@@ -46,7 +46,7 @@ def index():
             query = Post.query
 
         pagination = query.order_by(Post.timestamp.desc()).paginate(
-            page, per_page=current_app.config['TESTWEB_POSTS_PER_PAGE'],error_out=False)
+            page, per_page=current_app.config['DARKWEB_POSTS_PER_PAGE'],error_out=False)
 
     posts = pagination.items
     return render_template('index.html', posts=posts, 
@@ -58,7 +58,7 @@ def user(username):
     user = User.query.filter_by(username=username).first_or_404()  
     page = request.args.get('page', 1, type=int)
     pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
-        page, per_page=current_app.config['TESTWEB_POSTS_PER_PAGE'],error_out=False)
+        page, per_page=current_app.config['DARKWEB_POSTS_PER_PAGE'],error_out=False)
     posts = pagination.items  
     return render_template('user.html', user=user, posts=posts, pagination=pagination)
 
@@ -271,7 +271,7 @@ def delete_reply_comment(comment_id):
 def cleaning():
     page = request.args.get('page', 1, type=int)
     pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
-        page, per_page=current_app.config['TESTWEB_COMMENTS_PER_PAGE'],error_out=False)
+        page, per_page=current_app.config['DARKWEB_COMMENTS_PER_PAGE'],error_out=False)
     comments = pagination.items
     return render_template('cleaning.html', comments=comments,
                 pagination=pagination, page=page)
@@ -345,7 +345,7 @@ def followers(username):
 
     page = request.args.get('page', 1, type=int)
     pagination = user.followers.paginate(
-        page, per_page=current_app.config['TESTWEB_FOLLOWERS_PER_PAGE'],error_out=False)
+        page, per_page=current_app.config['DARKWEB_FOLLOWERS_PER_PAGE'],error_out=False)
     follows = [{'user': item.follower, 'timestamp': item.timestamp} for item in pagination.items]
 
     return render_template('followers.html', user=user, title="팔로워",
@@ -360,7 +360,7 @@ def followed_by(username):
     page = request.args.get('page', 1, type=int)
 
     pagination = user.followed.paginate(
-        page, per_page=current_app.config['TESTWEB_FOLLOWERS_PER_PAGE'],
+        page, per_page=current_app.config['DARKWEB_FOLLOWERS_PER_PAGE'],
         error_out=False)
     follows = [{'user': item.followed, 'timestamp': item.timestamp}
                for item in pagination.items]
