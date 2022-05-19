@@ -6,6 +6,7 @@ from . import auth
 from .forms import SignupForm, LoginForm
 from ..models import User
 from sqlalchemy import exc
+import os
 
 @auth.route('/signup/', methods=['GET', 'POST'])
 def signup():
@@ -19,13 +20,15 @@ def signup():
             try:    
                 db.session.add(user)
                 db.session.commit()
+                if not os.path.exists('./uploads/' + form.email.data):
+                    os.makedirs('./uploads/' + form.email.data)
                 flash('가입되었습니다. 로그인 하세요.')                
                 return redirect(url_for('main.index'))
             except exc.IntegrityError:
                 db.session.rollback()
                 flash('사용중인 이메일 주소입니다.')
         else:
-            flash('이미 등록된 사용자입니다.')        
+            flash('이미 등록된 사용자입니다.')
     return render_template('auth/signup.html', form=form)
 
 
@@ -40,7 +43,7 @@ def login():
             if next is None or not next.startswith('/'):
                 next = url_for('main.index')
             return redirect(next)
-        flash('이메일 또는 비밀번호를 확인하세요.')   
+        flash('이메일 또는 비밀번호를 확인하세요.') 
     return render_template('auth/login.html', form=form)
 
 @auth.route('/logout')
