@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}My Darkweb - {{ user.username }}{% endblock %}
+{% block title %}My Blog - {{ user.username }}{% endblock %}
 
 {% block page_content %}
 <div class="container">
@@ -33,29 +33,6 @@
             {% endif %}
             <p>
                 {{ moment(user.last_seen).fromNow() }} 방문.
-            </p>
-
-            <p>게시글: {{ user.posts.count() }} &nbsp;&nbsp;답글: {{ user.replies.count() }}  &nbsp;&nbsp;댓글: {{ user.comments.count() }} </p>
-
-            <p>
-                {% if current_user.can(Permission.FOLLOW) and user != current_user %}
-                    {% if not current_user.is_following(user) %}
-                        <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary mr-3">팔로우</a>
-                    {% else %}
-                        <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-outline-secondary mr-3">언팔로우</a>
-                    {% endif %}
-                {% endif %}
-
-                <a href="{{ url_for('.followers', username=user.username) }}">
-                    팔로워: <span class="badge">{{ user.followers.count() - 1 }}</span>
-                </a>
-                <a href="{{ url_for('.followed_by', username=user.username) }}">
-                    팔로잉: <span class="badge">{{ user.followed.count() - 1 }}</span>
-                </a>
-
-                {% if current_user.is_authenticated and user != current_user and user.is_following(current_user) %}
-                <span class="label label-default">팔로우 합니다.</span>
-                {% endif %}
             </p>
 
             <p>

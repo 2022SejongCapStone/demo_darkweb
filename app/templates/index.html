@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}My Darkweb{% endblock %}
+{% block title %}My Blog{% endblock %}
 
 {% block page_content %}
     <div class="page-header">
@@ -14,9 +14,9 @@
     </div>
 
     <div class="row my-3 mt-4">
-        <div class="ml-3 input-group" style="width:240px;">
-            <input type="text" class="form-control search" value="{{ search or '' }}" {% if show_followed %} disabled {% endif %}>
-            <button class="btn btn-outline-secondary" type="button" id="btn_search" {% if show_followed %} disabled {% endif %}>
+        <div class="m1-3 input-group" style="width:240px;">
+            <input type="text" class="form-control search" value="{{ search or '' }}">
+            <button class="btn btn-outline-secondary" type="button" id="btn_search">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
                     <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
@@ -29,21 +29,7 @@
         </div>
     </div>
 
-    <div class="post-tabs">
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a {% if not show_followed %}class="nav-link active"{% else %}class="nav-link" {% endif %}
-                   href="{{ url_for('.show_all') }}">전체</a>
-            </li>
-            {% if current_user.is_authenticated %}
-                <li class="nav-item">
-                    <a {% if show_followed %}class="nav-link active" {% else %}class="nav-link" {% endif %} 
-                        href="{{ url_for('.show_followed') }}">팔로우</a>
-                </li>
-            {% endif %}
-        </ul>
-        {% include '_posts.html' %}
-    </div>
+    {% include '_posts.html' %}
     {% include "_pagenate.html" %}
 
     <form id="searchForm" method="get" action="{{ url_for('main.index') }}">

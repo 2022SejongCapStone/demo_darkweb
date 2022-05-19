@@ -9,7 +9,6 @@ class Config:
     SQLALCHEMY_RECORD_QUERIES = True
     DARKWEB_POSTS_PER_PAGE = 10
     DARKWEB_COMMENTS_PER_PAGE = 10
-    DARKWEB_FOLLOWERS_PER_PAGE = 20
 
     @staticmethod
     def init_app(app):
