@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request, flash, make_response
+from flask import send_file, render_template, redirect, url_for, request, flash, make_response
 from flask_login import login_required, current_user
 from flask.globals import current_app
 from . import main
@@ -82,7 +82,7 @@ def post_write():
         post = Post(subject=form.subject.data,
                     body=form.body.data,
                     author=current_user._get_current_object(),
-                    filepath=secure_filename(filename))
+                    filename=secure_filename(filename))
         if request.method == 'POST':
             f = request.files['upload']
             f.save('./uploads/'+ current_user._get_current_object().email + '/' + secure_filename(f.filename))
@@ -261,25 +261,9 @@ def cleaning_disable(id):
     return redirect(url_for('.cleaning',
                             page=request.args.get('page', 1, type=int)))
 
-#다운로드 HTML 렌더링
-@main.route('/download')
-@login_required
-@permission_required(Permission.FILE)
-def down_page():
-	files = os.listdir("../../uploads")
-	return render_template('filedown.html',files=files)
-
 #파일 다운로드 처리
-@main.route('/fileDownload', methods = ['GET', 'POST'])
+@main.route('/download', methods = ['GET', 'POST'])
 @login_required
-@permission_required(Permission.FILE)
-def down_file():
+def downloadfile():
 	if request.method == 'POST':
-		sw=0
-		files = os.listdir("../../uploads")
-		for x in files:
-			if(x==request.form['file']):
-				sw=1
-
-		path = "../../uploads/" 
-		return send_file(path + request.form['file'], attachment_filename = request.form['file'], as_attachment=True)
+		return send_file(request.form['filepath'], download_name=request.form['filename'], as_attachment=True)

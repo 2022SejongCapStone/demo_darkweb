@@ -172,7 +172,7 @@ class Post(db.Model):
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    filepath = db.Column(db.String(100))
+    filename = db.Column(db.String(100))
     # 작성자 
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
