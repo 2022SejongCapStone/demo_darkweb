@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}My Darkweb - {{ user.username }}{% endblock %}
+
+{% block page_content %}
+<div class="container">
+    <div class="row">
+        <div>
+            <img class="img-rounded" src="{{ user.gravatar(size=128) }}">
+        </div>
+        <div class="col">
+            <h3>{{ user.username }}</h3>
+            {% if user.name or user.location %}
+                <p>
+                {% if user.name %}
+                    {{ user.name }}, &nbsp;
+                {% endif %}
+
+                {% if user.location %}
+                    <a href="http://maps.google.com/?q={{ user.location }}">{{ user.location }}</a>에 삽니다. 
+                {% endif %}
+                </p>
+            {% endif %}
+
+            {% if current_user.is_administrator() %}
+                <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
+            {% endif %}
+
+            {% if user.about_me %}
+                <p>{{ user.about_me }}</p>
+            {% endif %}
+            {% if user.member_since %}
+                <p>{{ user.member_since | date }} 가입. &nbsp;&nbsp;
+            {% endif %}
+            <p>
+                {{ moment(user.last_seen).fromNow() }} 방문.
+            </p>
+
+            <p>게시글: {{ user.posts.count() }} &nbsp;&nbsp;답글: {{ user.replies.count() }}  &nbsp;&nbsp;댓글: {{ user.comments.count() }} </p>
+
+            <p>
+                {% if current_user.can(Permission.FOLLOW) and user != current_user %}
+                    {% if not current_user.is_following(user) %}
+                        <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary mr-3">팔로우</a>
+                    {% else %}
+                        <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-outline-secondary mr-3">언팔로우</a>
+                    {% endif %}
+                {% endif %}
+
+                <a href="{{ url_for('.followers', username=user.username) }}">
+                    팔로워: <span class="badge">{{ user.followers.count() - 1 }}</span>
+                </a>
+                <a href="{{ url_for('.followed_by', username=user.username) }}">
+                    팔로잉: <span class="badge">{{ user.followed.count() - 1 }}</span>
+                </a>
+
+                {% if current_user.is_authenticated and user != current_user and user.is_following(current_user) %}
+                <span class="label label-default">팔로우 합니다.</span>
+                {% endif %}
+            </p>
+
+            <p>
+                {% if user == current_user %}
+                    <a class="btn btn-secondary m-1" href="{{ url_for('.edit_profile') }}">프로필 수정</a>
+                {% endif %}    
+                {% if current_user.is_administrator() %}
+                <a class="btn btn-danger m-1" href="{{ url_for('.edit_profile_admin', id=user.id) }}">프로필 수정 [Admin]</a>
+                {% endif %}    
+            </p>
+        </div>
+    </div>
+</div>
+
+{% include '_posts.html' %}
+{% include "_pagenate.html" %}
+
+{% endblock %}

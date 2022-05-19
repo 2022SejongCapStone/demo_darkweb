@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}My Darkweb - 회원가입{% endblock %}
+
+{% block page_content %}
+<div class="container my-3">
+    <div class="page-header">
+        <h5>회원등록</h5>
+    </div>
+    <div class="col-md-5">
+        <form method="post" class="post-form">
+            {{ form.csrf_token }}
+
+            <div class="form-group">
+                {{ form.email.label }} 
+                {{ form.email(class='form-control') }}
+            </div>           
+
+            <div class="form-group">
+                {{ form.username.label }}
+                {{ form.username(class='form-control') }}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label }}
+                {{ form.password (class='form-control') }}
+            </div>
+
+            <div class="form-group">
+                {{ form.password2.label }}
+                {{ form.password2 (class='form-control') }}
+            </div>
+
+            <div class="form-group">
+                {{ form.submit(class='btn btn-primary') }}
+            </div>           
+
+        </form>
+    </div>
+</div>
+{% endblock %}
