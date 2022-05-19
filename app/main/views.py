@@ -1,4 +1,4 @@
-from flask import send_file, render_template, redirect, url_for, request, flash, make_response
+from flask import send_from_directory, send_file, render_template, redirect, url_for, request, flash, make_response
 from flask_login import login_required, current_user
 from flask.globals import current_app
 from . import main
@@ -262,8 +262,10 @@ def cleaning_disable(id):
                             page=request.args.get('page', 1, type=int)))
 
 #파일 다운로드 처리
-@main.route('/download', methods = ['GET', 'POST'])
+@main.route('/download/<filename>', methods = ['GET', 'POST'])
 @login_required
-def downloadfile():
-	if request.method == 'POST':
-		return send_file(request.form['filepath'], download_name=request.form['filename'], as_attachment=True)
+def downloadfile(filename):
+    if request.method == 'POST':
+        #print("./uploads/" + request.form['email'] + "/" + filename)
+        #return send_file("./uploads/" + request.form['email'], filename=filename, as_attachment=True)
+        return send_file("../uploads/" + request.form['email'] + '/' + filename, as_attachment=True)
