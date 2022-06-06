@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>        
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='my_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <!-- 각 html 페이지 타이틀  -->
+    <title>{% block title %}{% endblock %}</title> 
+    <!--PageDown 미리보기-->      
+    {{ pagedown.html_head() }}
+</head>
+<body>
+    <!-- 부트스트랩 내비게이션 포함 -->
+    {% include "_navbar.html" %}
+
+    {% block content %}
+    <div class='container my-3'>
+        <!--flash()의 메시지 표시-->
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">
+                &times;
+            </button>
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <!-- 각 페이지의 내용이 들어감 -->   
+        {% block page_content %}
+        {% endblock %}
+    </div>
+    {% endblock %}    
+
+    <script src="{{ url_for('static', filename='jquery-3.5.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+    <!--moment 사용 설정-->
+    {% block script %}
+        {{ moment.include_moment() }}
+        {{ moment.locale('ko') }}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}My Darkweb - 댓글 클리닝{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h3>댓글 클리닝</h3>
+</div>
+{% set moderate = True %}
+{% include '_comments.html' %}
+{% include "_pagenate.html" %}
+
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}My Darkweb - 글보기{% endblock %}
+
+{% block page_content %}
+
+<h5>{{ post.subject }}</h5>
+
+<div class="container">
+  <div class="row">
+      <!--추천-->
+      <div class="text-center">
+          <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
+              {{ post.like | length }}
+          </div>
+          <a href="#" data-uri="{{ url_for('main.recommend_post', post_id=post.id) }}"
+              class="recommend btn btn-sm btn-secondary btn-block my-1">추천</a>           
+      </div>
+      <!--글내용-->
+      <div class="col">
+          <div class="card">
+              <div class="card-body">
+                  <div class="card-text">{{ post.body_html | safe }}</div>
+                  <div class="card-text">{{ post.filename }}</div>
+                  <form method="post" action="/download/{{post.filename}}" enctype="multipart/form-data">
+                    <input type="hidden" name="email" value="{{post.author.email}}">
+                    <input type="submit" value="다운로드">
+                  </form>
+                  <div class="post-date">{{ moment(post.timestamp).fromNow() }}</div>            
+                  <div class="post-author">{{ post.author.username }}</div> 
+              </div>
+
+              <div class="ml-3 mr-3">
+                  <!--게시글 댓글-->
+                  {% if post.comments | length > 0 %}
+                      {% for comment in post.comments %}
+                      <a name="comment_{{ comment.id }}"></a>
+                      <div class="comment py-1 text-nuted">
+                          {% if comment.disabled %}
+                              <span><i>클리너에 의해 클리닝 되었습니다.</i></span>
+                          {% else %}
+                              <span>{{ comment.body }}</span>  <!--style="white-space: pre-line;"--> 
+                          {% endif %}                           
+                          <span>
+                              - {{ comment.author.username }}, {{ moment(comment.timestamp).fromNow() }}
+                          </span>
+                          {% if current_user == comment.author %}
+                              <a href="{{ url_for('main.modify_post_comment', comment_id=comment.id) }}" 
+                                  class="small">수정</a>,
+                              <a href="#" class="delete small"
+                                  data-uri="{{ url_for('main.delete_post_comment', comment_id=comment.id) }}">삭제</a>
+                          {% endif %}
+                      </div>
+                      {% endfor %}
+                  </div>
+                  {% endif %}
+                  <div class="ml-3">
+                      <a href="{{ url_for('main.write_post_comment', post_id=post.id) }}"
+                          class="small"><small>댓글 쓰기</small></a> 
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+    <!--답변 리스트-->
+    <h5 class="mt-4">
+        {{ post.replies|length }}개의 답변이 있습니다.
+    </h5>
+    <hr/>
+    {% for reply in post.replies %}
+        <a name="reply_{{ reply.id }}"></a>
+        <div class="row">
+            <!--추천-->
+            <div class="text-center">
+                <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
+                    {{ reply.like | length }}
+                </div>
+                <a href="#" data-uri="{{ url_for('main.recommend_reply', reply_id=reply.id) }}"
+                    class="recommend btn btn-sm btn-secondary btn-block my-1">추천</a> 
+            </div>
+
+            <!--답변-->
+            <div class="col">
+                <div>
+                    <div class="card-text">{{ reply.body_html | safe }}</div>
+                    <div class="post-date">{{ moment(reply.timestamp).fromNow() }}</div>            
+                    <div class="post-author">{{ reply.author.username }}</div>
+                </div>  
+
+                {% if reply.comments | length > 0 %}
+                <div class="mt-3">
+                    {% for comment in reply.comments %}
+                        <a name="comment_{{ comment.id }}"></a>
+                        <div class="comment py-1 text-nuted">
+                            {% if comment.disabled %}
+                                <span><i>클리너에 의해 클리닝 되었습니다.</i></span>
+                            {% else %}
+                                <span>{{ comment.body }}</span>  <!--style="white-space: pre-line;"--> 
+                            {% endif %}                            
+                            <span>
+                                - {{ comment.author.username }}, {{ moment(comment.timestamp).fromNow() }}
+                            </span>
+                            {% if current_user == comment.author %}
+                                <a class="small"
+                                    href="{{ url_for('main.modify_reply_comment', comment_id=comment.id) }}">수정</a>,
+                                <a href="#" class="delete small"
+                                    data-uri="{{ url_for('main.delete_reply_comment', comment_id=comment.id) }}">삭제</a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}                    
+                </div>
+                {% endif %}  
+                <div>
+                    <a href="{{ url_for('main.write_reply_comment', reply_id=reply.id) }}"
+                    class="small"><small>댓글 쓰기</small></a>
+                </div>
+            </div>
+        </div>
+        <hr/> 
+    {% endfor %}
+
+    <!--답변등록(폼)-->
+    <form method="post" class="my-3">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.body.label }}
+            {{ form.body(class='form-control') }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class='btn btn-primary') }}
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block script %} 
+    {{ super() }} 
+    {{ pagedown.include_pagedown() }} 
+
+    <script type='text/javascript'>
+        $(document).ready(function(){
+            $(".delete").on('click', function() {
+                if(confirm("삭제하시겠습니까?")) {
+                    location.href = $(this).data('uri');
+                }
+            });
+
+            $(".recommend").on('click', function() {
+                if(confirm("추천하시겠습니까?")) {
+                    location.href = $(this).data('uri');
+                }
+            });
+        });
+    </script>
+{% endblock %}
