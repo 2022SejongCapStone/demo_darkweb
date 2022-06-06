@@ -1,0 +1,17 @@
+demo_darkweb v1.0.0 Release Note
+=================================
+
+This release demo_darkweb in cumulus v0.0.1
+
+Introduction:
+    Darkweb monitoring service for Sejong univ. infosec major Capstone Design
+
+Configuration:
+    flask
+    SQLite3
+    Web Server
+
+Feature:
+    File uploads
+    write posts
+    etc...
